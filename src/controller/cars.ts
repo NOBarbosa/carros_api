@@ -48,8 +48,21 @@ export const detailCar = async (req: Request, res: Response) =>{
         return res.status(500).json({message:'Erro interno'})
     }
 }
-export const updateCar = async (req: Request, res: Response) =>{
 
+export const updateCar = async (req: Request, res: Response) =>{
+    const {id } = req.params
+    const  {marca, modelo, ano, cor, valor} = req.body
+    try {
+        const car = await knex<Car>('cars').where({id: Number(id)}).first()
+        if(!car){
+            return res.status(404).json({message: "Not Found"})
+        }
+
+        await knex<Omit<Car, 'id'>>('cars').update({marca, modelo, ano, cor, valor})
+        return res.status(201).json({message: "OK"})
+    } catch (error) {
+        return res.status(500).json({message:'Erro interno'})
+    }
 }
 export const deleteCar = async (req: Request, res: Response) =>{
 
