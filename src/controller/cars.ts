@@ -58,14 +58,23 @@ export const updateCar = async (req: Request, res: Response) =>{
             return res.status(404).json({message: "Not Found"})
         }
 
-        await knex<Omit<Car, 'id'>>('cars').update({marca, modelo, ano, cor, valor})
+        await knex<Car>('cars').update({marca, modelo, ano, cor, valor}).where({id:Number(id)})
         return res.status(201).json({message: "OK"})
     } catch (error) {
         return res.status(500).json({message:'Erro interno'})
     }
 }
 export const deleteCar = async (req: Request, res: Response) =>{
+    const {id } = req.params
+    try {
+        const car = await knex<Car>('cars').where({id: Number(id)}).first()
+        if(!car){
+            return res.status(404).json({message: "Not Found"})
+        }
+        await knex<Car>('cars').delete().where({id:Number(id)})
+        return res.status(200).json({message: "Deleted"})
 
+    } catch (error) {
+        return res.status(500).json({message:'Erro interno'})
+    }
 }
-
-// export default {createCar,listCars, detailCar, updateCar, deleteCar}
